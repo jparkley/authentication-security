@@ -29,7 +29,6 @@ app.use(passport.session());
 
 // Connect to MongoDB
 const dbUrl = "mongodb+srv://" + process.env.DB_USER + ":" + process.env.DB_PASSWORD  + "@" + process.env.DB_HOST + "/" + process.env.DB_DATABASE;
-console.log(dbUrl);
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 //mongoose.connect("mongodb://localhost:27017/wikiDB", { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -111,7 +110,6 @@ app.get("/secrets", function(req, res){
       console.log(err);
     } else {
       if(foundUsers) {
-        console.log(foundUsers);
         res.render("secrets", {userWithSecrets: foundUsers});
       }
     }
@@ -188,6 +186,6 @@ app.post("/submit", function(req, res){
   });
 });
 
-app.listen(3000, function(){
+app.listen(process.env.PORT || 3000, function(){
   console.log("Server started");
 });

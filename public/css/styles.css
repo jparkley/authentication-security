@@ -3,30 +3,36 @@ body {
   background-color: #E8ECEF;
 }
 
+h1 {
+  font-size: 2rem;
+}
+
 .subtitle {
+  color: #154360;
   font-size: 2rem;
 }
 
 .centered {
-    padding-top: 200px;
+    /* padding-top: 200px; */
+    padding-top: auto;
     text-align: center;
 }
 
 .secret-container {
   display: inline-flex;
   justify-content: center;
-  /* margin: 0.5rem;   */
-
+  margin: 20px;
   position: relative;
   text-align: center;
 }
 
 .secret-text {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #fff;
+  /* text-align: center; */
   background-color: #000;
   border-radius: 5px;
-  padding: 2%;
+  color: #fff;
+  font-size: 1rem;
+  padding: 1rem;
   position: relative;
+
 }
