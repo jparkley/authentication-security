@@ -1,9 +1,11 @@
 //jshint esversion:6
-require("dotenv").config();
+// require("dotenv").config(); -> Error on Heroku
+const dotenv = require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+
 
 // Level 5 security: session and cookie
 const session = require("express-session");
@@ -28,7 +30,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to MongoDB
-const dbUrl = "mongodb+srv://" + process.env.DB_USER + ":" + process.env.DB_PASSWORD  + "@" + process.env.DB_HOST + "/" + process.env.DB_DATABASE;
+// const dbUrl = "mongodb+srv://" + process.env.DB_USER + ":" + process.env.DB_PASSWORD  + "@" + process.env.DB_HOST + "/" + process.env.DB_DATABASE;
+const dbUrl = "mongodb+srv://" + dotenv.parsed.DB_USER + ":" + dotenv.parsed.DB_PASSWORD  + "@" + dotenv.parsed.DB_HOST + "/" + dotenv.parsed.DB_DATABASE;
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 //mongoose.connect("mongodb://localhost:27017/wikiDB", { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -66,13 +69,14 @@ passport.deserializeUser(function(id, done) {
 
 // Add Google OAuth
 passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    clientID: dotenv.parsed.CLIENT_ID,
+    clientSecret: dotenv.parsed.CLIENT_SECRET,
+    // callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: dotenv.parsed.CALLBACK_URL,
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
+    //console.log(profile);
     User.findOrCreate({ googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
