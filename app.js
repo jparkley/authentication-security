@@ -27,13 +27,21 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true, useUnifiedTopology: true });
+// Connect to MongoDB
+const dbUrl = "mongodb+srv://" + process.env.DB_USER + ":" + process.env.DB_PASSWORD  + "@" + process.env.DB_HOST + "/" + process.env.DB_DATABASE;
+console.log(dbUrl);
+mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect("mongodb://localhost:27017/wikiDB", { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+//mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set("useCreateIndex", true);
 
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-  googleId: String
+  googleId: String,
+  secret: String
 });
 
 // Set a plugin to hash, salt a password and save it to MongoDB
@@ -57,7 +65,7 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-
+// Add Google OAuth
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
@@ -97,11 +105,23 @@ app.get("/register", function(req, res){
 });
 
 app.get("/secrets", function(req, res){
-  if(req.isAuthenticated()) {
-    res.render("secrets");
-  } else {
-    res.render("login");
-  }
+
+  User.find({"secret": {$ne: null}}, function(err, foundUsers) {
+    if(err) {
+      console.log(err);
+    } else {
+      if(foundUsers) {
+        console.log(foundUsers);
+        res.render("secrets", {userWithSecrets: foundUsers});
+      }
+    }
+  });
+
+  // if(req.isAuthenticated()) {
+  //   res.render("secrets");
+  // } else {
+  //   res.render("login");
+  // }
 });
 
 app.get("/logout", function(req, res){
@@ -109,9 +129,15 @@ app.get("/logout", function(req, res){
   res.redirect("/");
 });
 
+app.get("/submit", function(req, res){
+  if(req.isAuthenticated()) {
+    res.render("submit");
+  } else {
+    res.redirect("/");
+  }
+});
 
 app.post("/register", function(req, res){
-
   // Use passport-local-mongoose as a middleware
   // to replace creating new user, saving and interacting with Mongoose directly
   User.register({username: req.body.username},     req.body.password, function(err, user){
@@ -143,9 +169,24 @@ app.post("/login", function(req, res){
         });
       }
     });
-
 });
 
+
+app.post("/submit", function(req, res){
+  const submittedSecret = req.body.secret;
+  User.findById(req.user.id, function(err, foundUser){
+    if(err) {
+      console.log(err);
+    } else {
+      if(foundUser) {
+        foundUser.secret = submittedSecret;
+        foundUser.save(function() {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  });
+});
 
 app.listen(3000, function(){
   console.log("Server started");

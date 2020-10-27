@@ -3,14 +3,30 @@ body {
   background-color: #E8ECEF;
 }
 
+.subtitle {
+  font-size: 2rem;
+}
+
 .centered {
     padding-top: 200px;
     text-align: center;
 }
 
+.secret-container {
+  display: inline-flex;
+  justify-content: center;
+  /* margin: 0.5rem;   */
+
+  position: relative;
+  text-align: center;
+}
+
 .secret-text {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.2rem;
   color: #fff;
   background-color: #000;
+  border-radius: 5px;
+  padding: 2%;
+  position: relative;
 }
